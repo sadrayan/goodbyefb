@@ -25,6 +25,7 @@
       },
       "Properties": {
         "Handler": "index.handler",
+        "MemorySize": 1024,
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
@@ -60,7 +61,7 @@
         "Timeout": "25",
         "Code": {
           "S3Bucket": "amplify-goodbyefbamplify-dev-02141-deployment",
-          "S3Key": "amplify-builds/S3Trigger2d306b92-4768454e797069443735-build.zip"
+          "S3Key": "amplify-builds/S3Trigger2d306b92-4f41303346346454434b-build.zip"
         }
       }
     },

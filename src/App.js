@@ -1,32 +1,40 @@
 import React, { useState } from 'react';
 import './App.css';
 
-import Amplify, { Storage } from 'aws-amplify';
+import Amplify, { Auth, Storage } from 'aws-amplify';
 import { withAuthenticator } from '@aws-amplify/ui-react';
 import awsconfig from './aws-exports';
 Amplify.configure(awsconfig);
 
 const App = () => {
-  const [imageUrl, setImageUrl] = useState(null);
+  const [fileUrl, setFileUrl] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const downloadUrl = async () => {
-    const downloadUrl = await Storage.get('picture.jpg', { expires: 300 });
-    window.location.href = downloadUrl
+    // const downloadUrl = await Storage.get('picture.jpg', { expires: 300 });
+    window.location.href = fileUrl
   }
 
   const handleChange = async (e) => {
     const file = e.target.files[0];
+    
+    Auth.currentUserInfo()
+      .then(data => console.log(data))
+      .catch(err => console.log(err));
+
+    console.log(file)
+
     try {
       setLoading(true);
       // Upload the file to s3 with private access level. 
-      await Storage.put('picture.jpg', file, {
-        level: 'private',
+      await Storage.put(`zip/${file.name}`, file, {
+        level: 'protected',
         contentType: 'application/zip'
       });
       // Retrieve the uploaded file to display
-      const url = await Storage.get('picture.jpg', { level: 'private' })
-      setImageUrl(url);
+      const url = await Storage.get(file, { level: 'protected', expires: 300 })
+      console.log(file, url)
+      setFileUrl(url);
       setLoading(false);
     } catch (err) {
       console.log(err);
@@ -41,9 +49,6 @@ const App = () => {
         onChange={(evt) => handleChange(evt)}
       />}
       <div>
-        {imageUrl ? <img style={{ width: "30rem" }} src={imageUrl} /> : <span />}
-      </div>
-      <div>
         <h2>Download URL?</h2>
         <button onClick={() => downloadUrl()}>Click Here!</button>
       </div>
@@ -51,6 +56,5 @@ const App = () => {
   );
 }
 
-// withAuthenticator wraps your App with a Login component
 export default withAuthenticator(App);
 

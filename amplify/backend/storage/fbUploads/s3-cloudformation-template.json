@@ -228,15 +228,18 @@
                     "LambdaConfigurations": [
                         {
                             "Event": "s3:ObjectCreated:*",
-                            "Function": {
-                                "Ref": "functionS3Trigger2d306b92Arn"
-                            }
-                        },
-                        {
-                            "Event": "s3:ObjectRemoved:*",
-                            "Function": {
-                                "Ref": "functionS3Trigger2d306b92Arn"
-                            }
+							"Filter": {
+								"S3Key" : {
+									"Rules" : [ {
+										"Name" : "suffix",
+										"Value" : "zip"
+									  }
+									]
+								  }								  
+							},
+							"Function": {
+        			              "Ref": "functionS3Trigger2d306b92Arn"
+							}						  
                         }
                     ]
                 },
