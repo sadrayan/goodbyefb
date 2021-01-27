@@ -1,9 +1,22 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Lambda resource stack creation using Amplify CLI",
+  "Description": "Lambda Function resource stack creation using Amplify CLI",
   "Parameters": {
+    "CloudWatchRule": {
+      "Type": "String",
+      "Default": "NONE",
+      "Description": " Schedule Expression"
+    },
     "env": {
       "Type": "String"
+    },
+    "storagegoodbyefbTableName": {
+      "Type": "String",
+      "Default": "storagegoodbyefbTableName"
+    },
+    "storagegoodbyefbTableArn": {
+      "Type": "String",
+      "Default": "storagegoodbyefbTableArn"
     }
   },
   "Conditions": {
@@ -25,16 +38,15 @@
       },
       "Properties": {
         "Handler": "index.handler",
-        "MemorySize": 1024,
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "S3Trigger2d306b92",
+            "enrichFunction",
             {
               "Fn::Join": [
                 "",
                 [
-                  "S3Trigger2d306b92",
+                  "enrichFunction",
                   "-",
                   {
                     "Ref": "env"
@@ -48,6 +60,9 @@
           "Variables": {
             "ENV": {
               "Ref": "env"
+            },
+            "REGION": {
+              "Ref": "AWS::Region"
             }
           }
         },
@@ -57,11 +72,12 @@
             "Arn"
           ]
         },
-        "Runtime": "python3.8",
-        "Timeout": "300",
+        "Runtime": "nodejs12.x",
+        "Layers": [],
+        "Timeout": "25",
         "Code": {
           "S3Bucket": "amplify-goodbyefbamplify-dev-02141-deployment",
-          "S3Key": "amplify-builds/S3Trigger2d306b92-7472646b6a576a5a782f-build.zip"
+          "S3Key": "amplify-builds/enrichFunction-703279574b634c312b46-build.zip"
         }
       }
     },
@@ -71,12 +87,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "S3Trigger2d306b92LambdaRole2d306b92",
+            "goodbyefbamplifyLambdaRoled83312cc",
             {
               "Fn::Join": [
                 "",
                 [
-                  "S3Trigger2d306b92LambdaRole2d306b92",
+                  "goodbyefbamplifyLambdaRoled83312cc",
                   "-",
                   {
                     "Ref": "env"
@@ -144,10 +160,32 @@
               }
             },
             {
-              "Sid": "VisualEditor1",
               "Effect": "Allow",
-              "Action": "lambda:InvokeFunction",
-              "Resource": "*"
+              "Action": [
+                "dynamodb:DescribeTable",
+                "dynamodb:GetItem",
+                "dynamodb:Query",
+                "dynamodb:Scan",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem"
+              ],
+              "Resource": [
+                {
+                  "Ref": "storagegoodbyefbTableArn"
+                },
+                {
+                  "Fn::Join": [
+                    "/",
+                    [
+                      {
+                        "Ref": "storagegoodbyefbTableArn"
+                      },
+                      "index/*"
+                    ]
+                  ]
+                }
+              ]
             }
           ]
         }
