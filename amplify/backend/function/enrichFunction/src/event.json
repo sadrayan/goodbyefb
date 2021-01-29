@@ -1,5 +1,9 @@
 {
-  "key1": "value1",
-  "key2": "value2",
-  "key3": "value3"
+  "bucket": [
+      "goodbyefb-bucket02141-dev"
+  ],
+  "key": [
+      "protected/us-east-2:acc5d66a-e6bc-4961-b92b-feb11cefe66f/zip/facebook-sadrayan-full-json.zip"
+  ],
+  "path": "protected/us-east-2:acc5d66a-e6bc-4961-b92b-feb11cefe66f/extract/"
 }

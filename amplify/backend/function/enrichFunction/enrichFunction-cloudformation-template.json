@@ -17,6 +17,10 @@
     "storagegoodbyefbTableArn": {
       "Type": "String",
       "Default": "storagegoodbyefbTableArn"
+    },
+    "bucketName": {
+      "Type": "String",
+      "Default": "goodbyefb-bucket"
     }
   },
   "Conditions": {
@@ -63,6 +67,18 @@
             },
             "REGION": {
               "Ref": "AWS::Region"
+            },
+            "DDBtable": {
+              "Fn::Join": [
+                "",
+                [
+                  "goodbyefbTable",
+                  "-",
+                  {
+                    "Ref": "env"
+                  }
+                ]
+              ]
             }
           }
         },
@@ -77,7 +93,7 @@
         "Timeout": "25",
         "Code": {
           "S3Bucket": "amplify-goodbyefbamplify-dev-02141-deployment",
-          "S3Key": "amplify-builds/enrichFunction-703279574b634c312b46-build.zip"
+          "S3Key": "amplify-builds/enrichFunction-314c52363444314d6834-build.zip"
         }
       }
     },
@@ -182,6 +198,29 @@
                         "Ref": "storagegoodbyefbTableArn"
                       },
                       "index/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:ListBucket",
+                "s3:DeleteObject"
+              ],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "bucketName"
+                      },
+                      "/*"
                     ]
                   ]
                 }
